@@ -11,11 +11,6 @@ FEEDS = [
     "https://www.milanuncios.com/rss/inmobiliaria/chalets-en-venta.htm",
 ]
 
-FILTROS = {
-    "precio_max": 160000,
-    "superficie_min": 90,
-}
-
 def obtener_anuncios():
     anuncios = []
     for url in FEEDS:
@@ -219,4 +214,61 @@ td{{padding:12px 14px;border-top:1px solid var(--border);vertical-align:middle;}
 .pill-green2{{background:rgba(0,255,157,0.2);color:#00ffaa;border:1px solid rgba(0,255,157,0.4);font-weight:700;}}
 .pill-yellow{{background:rgba(245,200,66,0.1);color:var(--yellow);border:1px solid rgba(245,200,66,0.2);}}
 .pill-red{{background:rgba(255,74,74,0.1);color:var(--red);border:1px solid rgba(255,74,74,0.2);}}
-.alert-chollo{{background:linear-gradient(135deg,rgba(0,255,157,0.06) 0%,rgba(0,212,168,0.02) 100%);border:1px solid rgba(0
+.alert-chollo{{background:linear-gradient(135deg,rgba(0,255,157,0.06) 0%,rgba(0,212,168,0.02) 100%);border:1px solid rgba(0,255,157,0.35);border-radius:10px;padding:20px 24px;margin-bottom:40px;display:flex;gap:16px;align-items:flex-start;}}
+.alert-icon{{font-size:28px;flex-shrink:0;}}
+.alert-head{{font-family:'DM Serif Display',serif;font-size:16px;color:var(--green2);margin-bottom:4px;}}
+.section-title{{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:20px;display:flex;align-items:center;gap:10px;}}
+.section-title .line{{flex:1;height:1px;background:var(--border);margin-left:12px;}}
+footer{{border-top:1px solid var(--border);padding:20px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}}
+.footer-note{{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div>
+      <div class="logo">Inmo<span>Scanner</span></div>
+      <div style="margin-top:8px;color:var(--muted);font-size:13px;">Análisis automatizado · <strong style="color:var(--text)">Chalets independientes</strong> · España</div>
+    </div>
+    <div class="badge-date">{fecha}</div>
+  </div>
+</header>
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Analizados</div><div class="stat-value">{resumen.get('total',0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Nuevos hoy</div><div class="stat-value">{resumen.get('nuevos',0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Descartados</div><div class="stat-value">{resumen.get('descartados',0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Tendencia</div><div class="stat-value" style="font-size:18px">{resumen.get('tendencia','—')}</div></div>
+  </div>
+  {alerta_html}
+  <div class="section-title"><span>🔝</span> Top Oportunidades<div class="line"></div></div>
+  <div class="top-grid">{cards_html}</div>
+  <div class="section-title"><span>📋</span> Listado Completo<div class="line"></div></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Inmueble</th><th>Precio</th><th>€/m²</th><th>m²</th><th>Ubicación</th><th>Score</th><th>Clasificación</th><th>Fecha</th><th></th></tr></thead>
+      <tbody>{filas_html}</tbody>
+    </table>
+  </div>
+</div>
+<footer>
+  <div class="footer-note">InmoScanner · Generado: {fecha} · Próxima ejecución: 08:00h</div>
+</footer>
+</body>
+</html>""")
+    print("index.html generado correctamente")
+
+if __name__ == "__main__":
+    print("Obteniendo anuncios...")
+    anuncios = obtener_anuncios()
+    print(f"{len(anuncios)} anuncios encontrados")
+
+    if anuncios:
+        print("Analizando con IA...")
+        datos = analizar_con_ia(anuncios)
+    else:
+        print("Sin anuncios hoy, generando informe vacío")
+        datos = {"anuncios": [], "resumen": {"total": 0, "nuevos": 0, "descartados": 0, "tendencia": "estable"}}
+
+    print("Generando HTML...")
+    generar_html(datos)
