@@ -24,7 +24,7 @@ jobs:
       - name: Run scanner
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: python escaner.py
+        run: python escanner.py
 
       - name: Publish index.html
         run: |
