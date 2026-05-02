@@ -36,4 +36,4 @@ jobs:
           git stash pop 2>/dev/null || true
           git add index.html
           git commit -m "Update report"
-          git push origin gh-pages
+          git push origin gh-pages --force
