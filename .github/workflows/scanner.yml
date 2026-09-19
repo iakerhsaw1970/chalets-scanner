@@ -1,0 +1,39 @@
+name: Scanner Chalets
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests feedparser
+
+      - name: Run scanner
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: python scanner.py
+
+      - name: Publish index.html
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add index.html
+          git stash
+          git checkout gh-pages 2>/dev/null || git checkout --orphan gh-pages
+          git stash pop 2>/dev/null || true
+          git add index.html
+          git commit -m "Update report"
+          git push origin gh-pages --force
